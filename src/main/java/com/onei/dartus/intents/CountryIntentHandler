@@ -1,0 +1,39 @@
+package com.onei.birdus.Intents;
+
+
+import com.amazon.ask.dispatcher.request.handler.HandlerInput;
+import com.amazon.ask.dispatcher.request.handler.RequestHandler;
+import com.amazon.ask.model.IntentRequest;
+import com.amazon.ask.model.Request;
+import com.amazon.ask.model.Response;
+import com.amazon.ask.model.Slot;
+import com.amazon.ask.request.Predicates;
+import com.onei.birdus.BirdusS3Client;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.Map;
+import java.util.Optional;
+
+@Slf4j
+public class CountryIntentHandler implements RequestHandler {
+
+    @Override
+    public boolean canHandle(HandlerInput input) {
+
+        return input.matches(Predicates.intentName("countryIntent"));
+    }
+
+    @Override
+    public Optional<Response> handle(HandlerInput input) {
+        Request request = input.getRequest();
+        log.debug("Request " + request);
+        BirdusS3Client birdusS3Client = new BirdusS3Client();
+        String results = birdusS3Client.getResultsForCounty(county);
+
+        return input.getResponseBuilder()
+                .withSpeech(results)
+                .withSimpleCard("Results for "+county, results)
+                .build();
+    }
+
+}
